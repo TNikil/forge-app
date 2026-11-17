@@ -16,9 +16,9 @@ export default function Scanner() {
   }, [on]);
   return (
     <div>
-      {on && <div id="reader" className="overflow-hidden rounded-2xl mb-3" />}
-      <button onClick={() => { setMsg(""); setOn(!on); }} className="btn bg-brand text-white">{on ? "Cancel" : "Scan gym QR"}</button>
-      {msg && <p role="status" className="mt-3 text-sm text-white/80">{msg}</p>}
+      {on && <div id="reader" className="overflow-hidden rounded-2xl mb-3 max-w-sm bg-black" />}
+      <button onClick={() => { setMsg(""); setOn(!on); }} className="btn bg-white text-ink">{on ? "Cancel" : "Scan gym QR to check in"}</button>
+      {msg && <p role="status" className="mt-3 text-sm text-white/90">{msg}</p>}
     </div>
   );
 }
