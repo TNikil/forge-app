@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { BRAND } from "@/lib/brand";
 import Scanner from "@/components/Scanner";
 import GymQR from "@/components/GymQR";
 import ClaimClient from "@/components/ClaimClient";
 import WeightLog from "@/components/WeightLog";
+import RoutineChecklist from "@/components/RoutineChecklist";
 
 function Card({ title, dark, wide, children }: { title: string; dark?: boolean; wide?: boolean; children: React.ReactNode }) {
   return (
@@ -26,9 +28,14 @@ export default async function Dashboard() {
   if (role === "client") {
     const { data: stats } = await sb.from("body_stats").select("logged_on,weight_kg").eq("client_id", user.id).order("logged_on");
     const { count } = await sb.from("attendance").select("*", { count: "exact", head: true }).eq("client_id", user.id);
+    const { data: items } = await sb.from("routine_items").select("*").order("position");
+    const { data: logs } = await sb.from("set_logs").select("item_id,sets_done").eq("logged_on", today);
+    const { data: diet } = await sb.from("diet_plans").select("title,content").maybeSingle();
     body = (<>
       <Card title="Check in" dark><Scanner /></Card>
       <Card title="Gym visits"><p className="display text-7xl text-brand">{count ?? 0}</p></Card>
+      <Card title="Today's workout" wide><RoutineChecklist clientId={user.id} items={items ?? []} logs={logs ?? []} /></Card>
+      <Card title={diet?.title ?? "Diet plan"} wide>{diet ? <p className="whitespace-pre-wrap">{diet.content}</p> : <p className="text-black/60">Your trainer hasn't added a diet plan yet.</p>}</Card>
       <Card title="Your progress" wide><WeightLog clientId={user.id} initial={stats ?? []} /></Card>
     </>);
   } else {
@@ -44,7 +51,7 @@ export default async function Dashboard() {
           <ul className="divide-y divide-black/10">
             {clients.map(c => (
               <li key={c.id} className="flex items-center justify-between py-3">
-                <span><b>{c.full_name}</b> <span className="text-black/50 text-sm">{c.email}</span></span>
+                <Link href={`/dashboard/client/${c.id}`} className="hover:underline"><b>{c.full_name}</b> <span className="text-black/50 text-sm">{c.email}</span></Link>
                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${here.has(c.id) ? "bg-brand text-white" : "bg-black/5 text-black/50"}`}>
                   {here.has(c.id) ? "In today" : "Not in yet"}
                 </span>
