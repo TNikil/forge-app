@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
 
+const Arrow = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+);
+const Cta = ({ label, brand }: { label: string; brand?: boolean }) => (
+  <Link href="/login" className={`cta ${brand ? "cta-brand" : ""}`}>
+    <span className="roll"><span data-t={label}>{label}</span></span>
+    <span className="disc"><Arrow /></span>
+  </Link>
+);
+
 const features = [
   ["01", "Client profiles", "Every client in one place, linked to their trainer."],
   ["02", "Workout routines", "Custom plans with photos, video and diet charts."],
@@ -29,9 +39,12 @@ export default function Home() {
           <p className="mt-8 max-w-lg text-lg text-white/85 leading-relaxed">
             Trainers build the plan. Clients tick off every set, log their body stats and scan in at the gym door.
           </p>
-          <div className="mt-10 flex gap-3 flex-wrap">
-            <Link href="/login" className="btn bg-white text-ink px-7 py-4">Start your journey</Link>
-            <Link href="/login" className="btn border border-white/50 px-7 py-4 hover:bg-white/10">I’m a trainer</Link>
+          <div className="mt-10 flex gap-x-3 gap-y-5 flex-wrap items-center">
+            <Cta label="Start your journey" />
+            <Link href="/login" className="cta-link ml-3">
+              I’m a trainer
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M7 17 17 7M8 7h9v9" /></svg>
+            </Link>
           </div>
         </div>
 
@@ -60,7 +73,7 @@ export default function Home() {
         </ol>
         <div className="mt-14 flex items-center justify-between gap-4 flex-wrap border-t border-white/15 pt-8">
           <span className="font-extrabold text-lg"><span className="text-brand">⚡</span> {BRAND}</span>
-          <Link href="/login" className="btn bg-brand text-white px-7 py-4">Get started</Link>
+          <Cta label="Get started" brand />
         </div>
       </section>
     </main>

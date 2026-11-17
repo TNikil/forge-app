@@ -10,3 +10,21 @@ body { background: var(--color-paper); color: var(--color-ink); font-family: Int
 .btn { display:inline-flex; align-items:center; gap:.5rem; border-radius:9999px; padding:.8rem 1.4rem; font-weight:600; font-size:.9rem; transition:transform .15s; }
 .btn:active { transform: scale(.97); }
 .btn:focus-visible, input:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; }
+
+/* Signature CTA: pill with a rolling label and an arrow disc that swings to ↗ */
+.cta { display:inline-flex; align-items:center; gap:1.25rem; border-radius:9999px; background:#fff; color:var(--color-ink); padding:.45rem .45rem .45rem 1.75rem; font-weight:700; transition:transform .2s; }
+.cta:active { transform: scale(.97); }
+.cta:focus-visible, .cta-link:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.roll { display:block; height:1.5em; line-height:1.5em; overflow:hidden; }
+.roll > span { display:block; transition: transform .45s cubic-bezier(.7,0,.2,1); }
+.roll > span::after { content: attr(data-t); display:block; }
+.cta:hover .roll > span { transform: translateY(-100%); }
+.cta .disc { display:grid; place-items:center; width:3rem; height:3rem; border-radius:9999px; background:var(--color-ink); color:#fff; transition: transform .45s cubic-bezier(.7,0,.2,1), background .3s; }
+.cta:hover .disc { transform: rotate(-45deg); background: var(--color-brand); }
+.cta-brand { background: var(--color-brand); color:#fff; }
+.cta-brand .disc { background:#fff; color:var(--color-ink); }
+.cta-brand:hover .disc { background: var(--color-ink); color:#fff; }
+.cta-link { display:inline-flex; align-items:center; gap:.5rem; padding-bottom:.35rem; font-weight:600; color:#fff; background: linear-gradient(currentColor,currentColor) left bottom / 0% 2px no-repeat, linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35)) left bottom / 100% 1px no-repeat; transition: background-size .45s cubic-bezier(.7,0,.2,1); }
+.cta-link:hover { background-size: 100% 2px, 100% 1px; }
+.cta-link svg { transition: transform .3s; }
+.cta-link:hover svg { transform: translate(3px,-3px); }
