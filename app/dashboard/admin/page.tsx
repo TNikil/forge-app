@@ -18,7 +18,7 @@ export default async function Admin() {
     count("client"), count("trainer"),
     sb.from("attendance").select("*", { count: "exact", head: true }).eq("day", ago(0)),
     sb.from("attendance").select("*", { count: "exact", head: true }).gte("day", ago(6)),
-    sb.from("set_logs").select("*", { count: "exact", head: true }).gte("logged_on", ago(6)),
+    sb.from("set_entries").select("*", { count: "exact", head: true }).gte("logged_on", ago(6)),
     sb.from("attendance").select("day").gte("day", ago(13)),
     sb.from("profiles").select("id,full_name,email,role").order("created_at", { ascending: false }),
   ]);

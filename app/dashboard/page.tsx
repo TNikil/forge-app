@@ -8,7 +8,7 @@ import GymQR from "@/components/GymQR";
 import ClaimClient from "@/components/ClaimClient";
 import WeightLog from "@/components/WeightLog";
 import RoutineChecklist from "@/components/RoutineChecklist";
-import { repsByDay } from "@/lib/reps";
+import { lastWeights } from "@/lib/stats";
 
 function Diet({ text }: { text: string }) {
   const rows = text.split("\n").map(l => l.trim()).filter(Boolean);
@@ -34,20 +34,20 @@ export default async function Dashboard() {
     const { data: stats } = await sb.from("body_stats").select("logged_on,weight_kg,waist_cm").eq("client_id", user.id).order("logged_on");
     const { count } = await sb.from("attendance").select("*", { count: "exact", head: true }).eq("client_id", user.id);
     const { data: items } = await sb.from("routine_items").select("*").order("position");
-    const { data: logs } = await sb.from("set_logs").select("item_id,sets_done").eq("logged_on", today);
+    const { data: entries } = await sb.from("set_entries").select("item_id,set_no,logged_on,reps,weight_kg,routine_items(exercise_name)").eq("client_id", user.id);
+    const todays = (entries ?? []).filter(e => e.logged_on === today);
     const { data: diet } = await sb.from("diet_plans").select("title,content").maybeSingle();
-    const { data: all } = await sb.from("set_logs").select("logged_on,sets_done,routine_items(reps)").eq("client_id", user.id);
-    const planned = (items ?? []).reduce((a, i) => a + i.sets, 0), doneToday = (logs ?? []).reduce((a, l) => a + l.sets_done, 0);
+    const planned = (items ?? []).reduce((a, i) => a + i.sets, 0), doneToday = todays.length;
     body = (<>
       <Hero ghost="TRAIN" title={`Let's train, ${first}`} sub="Scan in at the gym, tick off your sets, log your numbers.">
         <div className="grid grid-cols-2 gap-3 max-w-md mb-6"><Stat label="Gym visits" value={count ?? 0} /><Stat label="Sets today" value={`${doneToday}/${planned}`} /></div>
         <Scanner />
       </Hero>
       <div className="grid lg:grid-cols-3 gap-4">
-        <Card title="Today's workout" className="lg:col-span-2"><RoutineChecklist clientId={user.id} items={items ?? []} logs={logs ?? []} /></Card>
+        <Card title="Today's workout" className="lg:col-span-2"><RoutineChecklist clientId={user.id} items={items ?? []} entries={todays} lastKg={lastWeights(entries ?? [])} /></Card>
         <Card title={diet?.title ?? "Diet plan"}>{diet?.content ? <Diet text={diet.content} /> : <p className="text-black/60">Your trainer hasn't added a diet plan yet.</p>}</Card>
       </div>
-      <Card title="Your progress"><WeightLog clientId={user.id} initial={stats ?? []} reps={repsByDay(all ?? [])} /></Card>
+      <Card title="Your progress"><WeightLog clientId={user.id} initial={stats ?? []} entries={entries ?? []} /></Card>
     </>);
   } else {
     const { data: clients } = await sb.from("profiles").select("id,full_name,email").eq("role", "client").order("full_name");

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
 import { Avatar } from "./ui";
+import InstallButton from "./InstallButton";
 export default function Header({ name, role }: { name: string; role: string }) {
   return (
     <header className="sticky top-3 z-20 mb-5 flex items-center justify-between rounded-full bg-ink text-white py-2.5 pl-6 pr-3">
       <Link href="/dashboard" className="font-extrabold text-lg"><span className="text-brand">⚡</span> {BRAND}</Link>
       <nav className="flex items-center gap-3 text-sm">
+        <InstallButton />
         {role === "admin" && <Link href="/dashboard/admin" className="hover:text-brand">Admin</Link>}
         <span className="hidden sm:block text-white/60">{name} · {role}</span>
         <Avatar name={name} size={36} />

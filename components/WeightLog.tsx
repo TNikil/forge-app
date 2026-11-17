@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import ProgressCharts from "./Charts";
 type Row = { logged_on: string; weight_kg: number | null; waist_cm: number | null };
-export default function WeightLog({ clientId, initial, reps }: { clientId: string; initial: Row[]; reps: { day: string; reps: number }[] }) {
+export default function WeightLog({ clientId, initial, entries }: { clientId: string; initial: Row[]; entries: any[] }) {
   const [rows, setRows] = useState(initial); const [w, setW] = useState(""); const [waist, setWaist] = useState(""); const [msg, setMsg] = useState("");
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -16,7 +16,7 @@ export default function WeightLog({ clientId, initial, reps }: { clientId: strin
   const field = "rounded-full border border-black/15 bg-white px-4 py-3 w-36";
   return (
     <div>
-      <ProgressCharts stats={rows} reps={reps} />
+      <ProgressCharts stats={rows} entries={entries} />
       <form onSubmit={save} className="mt-6 flex gap-2 flex-wrap items-center rounded-2xl bg-paper p-3">
         <input className={field} type="number" step="0.1" required placeholder="Weight (kg)" value={w} onChange={e => setW(e.target.value)} />
         <input className={field} type="number" step="0.1" placeholder="Waist (cm)" value={waist} onChange={e => setWaist(e.target.value)} />

@@ -1,5 +1,6 @@
 "use client";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { records, repsByDay, volumeByDay } from "@/lib/stats";
 const tick = { fontSize: 12, fill: "#8a8a8a" };
 const tip = { contentStyle: { borderRadius: 16, border: "none", boxShadow: "0 8px 30px rgba(0,0,0,.12)" } };
 const md = (d: string) => d.slice(5);
@@ -10,7 +11,7 @@ export function BarsChart({ data, xKey, yKey, empty }: { data: any[]; xKey: stri
     <div className="h-52"><ResponsiveContainer><BarChart data={data}>
       <CartesianGrid vertical={false} stroke="#eee" />
       <XAxis dataKey={xKey} tickFormatter={md} tick={tick} axisLine={false} tickLine={false} />
-      <YAxis tick={tick} axisLine={false} tickLine={false} width={34} allowDecimals={false} />
+      <YAxis tick={tick} axisLine={false} tickLine={false} width={40} allowDecimals={false} />
       <Tooltip {...tip} cursor={{ fill: "rgba(255,90,31,.08)" }} />
       <Bar dataKey={yKey} fill="#ff5a1f" radius={[8, 8, 0, 0]} />
     </BarChart></ResponsiveContainer></div>
@@ -29,13 +30,23 @@ function Trend({ data, yKey, empty }: { data: any[]; yKey: string; empty: string
     </AreaChart></ResponsiveContainer></div>
   );
 }
-export default function ProgressCharts({ stats, reps }: { stats: any[]; reps: { day: string; reps: number }[] }) {
-  const w = stats.filter(s => s.weight_kg != null), c = stats.filter(s => s.waist_cm != null);
+export default function ProgressCharts({ stats, entries }: { stats: any[]; entries: any[] }) {
+  const w = stats.filter(s => s.weight_kg != null), c = stats.filter(s => s.waist_cm != null), prs = records(entries);
   return (
     <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
       <div><h3 className="font-bold mb-2">Weight (kg)</h3><Trend data={w} yKey="weight_kg" empty="Log your weight to start this chart." /></div>
-      <div><h3 className="font-bold mb-2">Reps completed</h3><BarsChart data={reps} xKey="day" yKey="reps" empty="Tick off sets in your workout to see reps here." /></div>
+      <div><h3 className="font-bold mb-2">Reps completed</h3><BarsChart data={repsByDay(entries)} xKey="day" yKey="reps" empty="Save a set with its reps to see this." /></div>
+      <div><h3 className="font-bold mb-2">Volume lifted (kg)</h3><BarsChart data={volumeByDay(entries)} xKey="day" yKey="volume" empty="Reps × weight shows up here." /></div>
       {c.length > 0 && <div><h3 className="font-bold mb-2">Waist (cm)</h3><Trend data={c} yKey="waist_cm" empty="" /></div>}
+      {prs.length > 0 && (
+        <div className="md:col-span-2"><h3 className="font-bold mb-3">Personal records</h3>
+          <ul className="grid sm:grid-cols-3 gap-3">{prs.map(p => (
+            <li key={p.name} className="rounded-2xl bg-ink text-white p-4">
+              <p className="text-sm text-white/60 truncate">{p.name}</p>
+              <p className="display text-3xl text-brand">{p.kg}<span className="text-base text-white ml-1">kg</span></p>
+              <p className="text-sm text-white/60">× {p.reps} reps</p>
+            </li>))}</ul></div>
+      )}
     </div>
   );
 }
